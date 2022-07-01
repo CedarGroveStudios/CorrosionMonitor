@@ -1,0 +1,32 @@
+{
+  "coord":{"lon":-119.28,"lat":46.28},
+  "weather":[{
+    "id":804,
+    "main":"Clouds",
+    "description":"overcast clouds",
+    "icon":"04d"}],
+  "base":"stations",
+  "main":{
+    "temp":278.69,
+    "pressure":1031,
+    "humidity":93,
+    "temp_min":275.37,
+    "temp_max":282.59},
+  "visibility":16093,
+  "wind":{
+    "speed":1.46,
+    "deg":355.002},
+  "clouds":{
+    "all":90},
+  "dt":1552606984,
+  "sys":{
+    "type":1,
+    "id":5676,
+    "message":0.0061,
+    "country":"US",
+    "sunrise":1552572604,
+    "sunset":1552615364},
+  "id":5808276,
+  "name":"Richland",
+  "cod":200
+}

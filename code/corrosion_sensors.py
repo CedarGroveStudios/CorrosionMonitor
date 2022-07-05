@@ -58,15 +58,15 @@ class CorrosionLight:
     def normalized(self):
         # Acquire the current and averaged normalized light sensor value
         raw_avg, norm_avg, lux_avg = self.average()
-        norm = round(self._light_avg[0] / 65535, 3)
+        norm = round(self._light_avg[0] / 65535, 6)
         return norm, norm_avg
 
     @property
     def lux(self):
         # Acquire the current and averaged lux light sensor value
         raw_avg, norm_avg, lux_avg = self.average()
-        norm = round(self._light_avg[0] / 65535, 3)
-        lux = round(norm * 1100, 1)  # 3.3v = 1100Lux (approximately)
+        norm = round(self._light_avg[0] / 65535, 6)
+        lux = round(norm * 1100, 3)  # 3.3v = 1100Lux (approximately)
         return lux, lux_avg
 
     def average(self):
@@ -76,8 +76,8 @@ class CorrosionLight:
         for i in range(0, 25):
             raw_avg = raw_avg + self._light_avg[i]
         raw_avg = raw_avg / 25
-        norm_avg = round(raw_avg / 65535, 3)
-        lux_avg = round(norm_avg * 1100, 1)  # 3.3v ~ 1100 Lux
+        norm_avg = round(raw_avg / 65535, 6)
+        lux_avg = round(norm_avg * 1100, 3)  # 3.3v ~ 1100 Lux
         return raw_avg, norm_avg, lux_avg
 
 

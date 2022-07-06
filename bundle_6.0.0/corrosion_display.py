@@ -1,6 +1,7 @@
-# corrosion_display.py
-# 2020-11-15 v02 (exterior sensor removed)
-# Cedar Grove Studios
+# Workstation Corrosion Monitor
+# Copyright 2018, 2019, 2020, 20221, 2022 by JG for Cedar Grove Maker Studios
+#
+# corrosion_display.py  2020-11-15 v02 (exterior sensor removed)
 
 import time
 import board

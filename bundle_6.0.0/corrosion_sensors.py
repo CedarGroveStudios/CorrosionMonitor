@@ -1,5 +1,7 @@
-# Corrosion Sensors
-# 2021-08-17 v02
+# Workstation Corrosion Monitor
+# Copyright 2018, 2019, 2020, 20221, 2022 by JG for Cedar Grove Maker Studios
+#
+# corrosion_sensors.py  2022-07-06 v3.0
 
 import time
 import board
@@ -43,42 +45,40 @@ class CorrosionLight:
     """A sensor class for the PyPortal's integral light sensor."""
 
     def __init__(self):
-        self._light_sensor = AnalogIn(board.LIGHT)
-        self._light_avg = []
-        for i in range(0, 25):
-            self._light_avg.append(self._light_sensor.value)
+        """Establish a background baseline light level."""
+        self._sensor = AnalogIn(board.LIGHT)
+        self._bkg = 0
+        for i in range(1000):
+            self._bkg = self._bkg + self._sensor.value
+        self._bkg = self._bkg / 1000
 
     @property
     def raw(self):
-        # Acquire the current and averaged raw light sensor value
-        raw_avg, norm_avg, lux_avg = self.average()
-        return self._light_avg[0], raw_avg
+        """Acquire the current and background raw light sensor value."""
+        self._read()
+        return self._raw, self._bkg
 
     @property
     def normalized(self):
-        # Acquire the current and averaged normalized light sensor value
-        raw_avg, norm_avg, lux_avg = self.average()
-        norm = round(self._light_avg[0] / 65535, 6)
-        return norm, norm_avg
+        """Acquire the current and background normalized light sensor value."""
+        self._read()
+        return self._raw / 65535, self._bkg / 65535
 
     @property
     def lux(self):
-        # Acquire the current and averaged lux light sensor value
-        raw_avg, norm_avg, lux_avg = self.average()
-        norm = round(self._light_avg[0] / 65535, 6)
-        lux = round(norm * 1100, 3)  # 3.3v = 1100Lux (approximately)
-        return lux, lux_avg
+        """Acquire the current and background lux light sensor value. Full-scale
+        raw value (65535) is approximately 1100 Lux."""
+        self._read()
+        return self._raw / 65535 * 1100, self._bkg / 65535 * 1100
 
-    def average(self):
-        self._light_avg.pop()
-        self._light_avg.insert(0, self._light_sensor.value)
-        raw_avg = 0
-        for i in range(0, 25):
-            raw_avg = raw_avg + self._light_avg[i]
-        raw_avg = raw_avg / 25
-        norm_avg = round(raw_avg / 65535, 6)
-        lux_avg = round(norm_avg * 1100, 3)  # 3.3v ~ 1100 Lux
-        return raw_avg, norm_avg, lux_avg
+    def _read(self):
+        """Read and average 25 sensor values. Adjust the background baseline
+        with the new reading."""
+        self._raw = 0
+        for i in range(25):
+            self._raw = self._raw + self._sensor.value
+        self._raw = self._raw / 25
+        self._bkg = (0.9 * self._bkg) + (0.1 * self._raw)
 
 
 class CorrosionTempHumid:

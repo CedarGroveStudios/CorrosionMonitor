@@ -85,7 +85,8 @@ while True:
         if (time.monotonic() - backlight_timer) > GESTURE_DURATION:
             print(f"GESTURE TIMEOUT  {time_str:16s}")
             backlight_on = False
-            light.bkg_calibrate()
+            print("Recalibrate light sensor background baseline value")
+            light.bkg_calibrate()  # Update light sensor background baseline value
     else:
         # Set the idle backlight level when not responding to a gesture
         if fan.value:
@@ -98,6 +99,8 @@ while True:
     # Do something every minute or when first starting the while loop
     if now.tm_sec == 0 or while_loop_startup_init:
         disp.show()  # Update clock display
+        print("Recalibrate light sensor background baseline value")
+        light.bkg_calibrate()  # Update light sensor background baseline value
 
         # Acquire and condition sensor data
         disp.sensor_icon = True

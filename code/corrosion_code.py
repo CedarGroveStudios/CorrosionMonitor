@@ -1,7 +1,7 @@
 # Workstation Corrosion Monitor
 # Copyright 2018, 2019, 2020, 20221, 2022 by JG for Cedar Grove Maker Studios
 #
-# corrosion_code.py 2022-07-06 v4.1
+# corrosion_code.py 2022-07-07 v4.1
 
 import time
 import board
@@ -52,6 +52,8 @@ while_loop_startup_init   = True   # Forces first pass through loop sections
 previous_sensor_heater_on = False  # The historical sensor heater state
 backlight_timer           = None   # Used for timing the backlight
 backlight_on              = False  # The backlight state
+clock_tick                = False  # The clock tick indicator state
+neo_brightness = disp.pyportal.neopix.brightness  # default neopixel brightness
 
 aio_feed_write = True  # Enable feeds to AIO
 sd_card_write  = True  # Enable sd card logging
@@ -61,7 +63,13 @@ while True:
     now = time.localtime()
     format_str = "%04d-%02d-%02d, %02d:%02d:%02d"
     time_str = format_str % (now[0], now[1], now[2], now[3], now[4], now[5])
-    disp.clock_tick = not disp.clock_tick
+
+    disp.clock_tick = not disp.clock_tick  # Change the on-screen tick indicator
+    # Change the brightness of the on-board neopixel to show clock tick
+    if disp.pyportal.neopix.brightness == 0.0:
+        disp.pyportal.neopix.brightness = neo_brightness
+    else:
+        disp.pyportal.neopix.brightness = 0.0
 
     # Monitor the light level; look for a gesture and adjust brightness
     reading, background = light.raw  # Get light sensor raw value (0 to 65535)
@@ -98,6 +106,7 @@ while True:
 
     # Do something every minute or when first starting the while loop
     if now.tm_sec == 0 or while_loop_startup_init:
+        disp.pyportal.neopix.brightness = neo_brightness
         disp.show()  # Update clock display
         print("Recalibrate light sensor background baseline value")
         light.bkg_calibrate()  # Update light sensor background baseline value
@@ -149,6 +158,7 @@ while True:
     # Do something every AIO_CLUSTER_DELAY starting at AIO_CLUSTER_OFFSET
     #   minutes past the hour
     if now.tm_min % AIO_CLUSTER_DELAY == AIO_CLUSTER_OFFSET and now.tm_sec < 10:
+        disp.pyportal.neopix.brightness = neo_brightness
         # Send sensor data to the SD card and AIO
         if sd_card_write:
             sd_data_record = "%16s, %3.1f, %3.1f, %3.1f" % (

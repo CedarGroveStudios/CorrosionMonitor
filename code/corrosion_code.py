@@ -65,11 +65,16 @@ while True:
 
     # Monitor the light level; look for a gesture and adjust brightness
     reading, background = light.raw  # Get light sensor raw value (0 to 65535)
+    threshold = 0.90  # Gesture brightness threshold
+    """print("")
+    print(f"reading: {reading:6.2f}  background: {background:6.2f}")
+    print(f"reading/background: {reading/background}")
+    print(f"background: {background / 65535:8.8f}  threshold: {threshold:8.8f}")"""
 
     if not backlight_on:
-        # Check for gesture; reading less than 80% of background light level
-        if reading / background < 0.80:
-            print("GESTURE DETECTED")
+        # Check for gesture; reading less than threshold of background light level
+        if reading / background < threshold:
+            print(f"GESTURE DETECTED {time_str:16s}")
             backlight_timer = time.monotonic()
             backlight_on = True
 
@@ -78,8 +83,9 @@ while True:
         disp.brightness = 1.0
         # After GESTURE_DURATION seconds, dim the backlight
         if (time.monotonic() - backlight_timer) > GESTURE_DURATION:
-            print("GESTURE TIMEOUT")
+            print(f"GESTURE TIMEOUT  {time_str:16s}")
             backlight_on = False
+            light.bkg_calibrate()
     else:
         # Set the idle backlight level when not responding to a gesture
         if fan.value:

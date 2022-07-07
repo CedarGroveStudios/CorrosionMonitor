@@ -47,10 +47,7 @@ class CorrosionLight:
     def __init__(self):
         """Establish a background baseline light level."""
         self._sensor = AnalogIn(board.LIGHT)
-        self._bkg = 0
-        for i in range(1000):
-            self._bkg = self._bkg + self._sensor.value
-        self._bkg = self._bkg / 1000
+        self.bkg_calibrate()
 
     @property
     def raw(self):
@@ -75,11 +72,18 @@ class CorrosionLight:
         """Read and average 25 sensor values. Adjust the background baseline
         with the new reading."""
         self._raw = 0
-        for i in range(25):
+        for i in range(250):
             self._raw = self._raw + self._sensor.value
-        self._raw = self._raw / 25
-        self._bkg = (0.9 * self._bkg) + (0.1 * self._raw)
+        self._raw = self._raw / 250
+        self._bkg = (0.99 * self._bkg) + (0.01 * self._raw)
 
+    def bkg_calibrate(self):
+        """Establish a background baseline light level."""
+        self._bkg = 0
+        for i in range(1000):
+            self._bkg = self._bkg + self._sensor.value
+        self._bkg = self._bkg / 1000
+        
 
 class CorrosionTempHumid:
     """A sensor class for the SHT31D-based indoor/outdoor and the AM2320-based

@@ -1,14 +1,25 @@
 # Workstation Corrosion Monitor
 # Copyright 2018, 2019, 2020, 20221, 2022 by JG for Cedar Grove Maker Studios
 #
-# corrosion_code.py 2022-07-08 v4.2
+# corrosion_code.py 2022-07-11 v4.0711
 
 import time
 import board
+import supervisor
 from digitalio import DigitalInOut, Direction
 from simpleio import map_range
 from corrosion_display import CorrosionDisplay
 from corrosion_sensors import CorrosionTempHumid, CorrosionLight, CorrosionTemp
+
+print("running corrosion_code.py")
+
+# Reduce status neopixel brightness to help keep things cool on error exit
+# TODO: reduce TFT backlight brightness upon exit
+supervisor.set_rgb_status_brightness(16)
+
+# Force a restart upon error exit to keep things alive when the eventual
+#   internet error happens
+supervisor.set_next_code_file(filename="code.py", reload_on_error=True)
 
 # fmt: off
 # Adafruit IO Feed Names

@@ -1,7 +1,7 @@
 # Workstation Corrosion Monitor
-# Copyright 2018, 2019, 2020, 20221, 2022 by JG for Cedar Grove Maker Studios
+# Copyright 2018, 2019, 2020, 2021, 2022 by JG for Cedar Grove Maker Studios
 #
-# corrosion_sensors.py  2022-07-08 v3.0
+# corrosion_sensors.py  2022-07-08 v3.0708
 
 import time
 import board

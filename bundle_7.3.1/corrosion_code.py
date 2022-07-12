@@ -1,5 +1,5 @@
-# Workstation Corrosion Monitor
-# Copyright 2018, 2019, 2020, 20221, 2022 by JG for Cedar Grove Maker Studios
+# Workshop Corrosion Monitor
+# Copyright 2018, 2019, 2020, 2021, 2022 by JG for Cedar Grove Maker Studios
 #
 # corrosion_code.py 2022-07-11 v4.0711
 

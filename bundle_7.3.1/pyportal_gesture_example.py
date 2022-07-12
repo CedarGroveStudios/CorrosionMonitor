@@ -24,7 +24,9 @@ def read_foreground(background, samples=250):
         foreground = foreground + light_sensor.value
     foreground = foreground / samples
     background = (0.99 * background) + (0.01 * foreground)
-    return foreground, background
+    # Calculate foreground to background brightness ratio
+    ratio = foreground / background
+    return foreground, background, ratio
 
 def read_background(samples=1000):
     """Read and average sensor values to establish the background light
@@ -42,9 +44,7 @@ background_level = read_background()
 
 while True:
     # Monitor the light level; look for a gesture.
-    foreground_level, background_level = read_foreground(background_level)
-    # Calculate foreground to background ratio
-    brightness_ratio = foreground_level / background_level
+    _, background_level, brightness_ratio = read_foreground(background_level)
 
     # Check for gesture; reading less than threshold of brightness ratio
     if brightness_ratio < GESTURE_DETECT_THRESHOLD:

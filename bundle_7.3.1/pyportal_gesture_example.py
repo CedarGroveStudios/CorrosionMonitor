@@ -48,7 +48,7 @@ while True:
 
     # Check for gesture; reading less than threshold of brightness ratio
     if brightness_ratio < GESTURE_DETECT_THRESHOLD:
-        print("GESTURE DETECTED")
+        print(f"GESTURE DETECTED  {brightness_ratio:6.3f}")
     elif brightness_ratio > 2 - GESTURE_DETECT_THRESHOLD:
         # Background light level increased; refresh background measurement
         print("Refresh light sensor background measurement")

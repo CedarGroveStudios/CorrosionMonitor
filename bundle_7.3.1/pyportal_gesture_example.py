@@ -13,7 +13,7 @@ light_sensor = AnalogIn(board.LIGHT)
 GESTURE_DETECT_THRESHOLD = 0.90
 
 
-def read_foreground(background, samples=250):
+def read_foreground(background, samples=2000):
     """Read and average sensor values. Adjust the background baseline
     slightly with the new reading. A high samples value will reduce sensitivity
     to flickering light sources but will proportionally increase acquisition
@@ -28,7 +28,7 @@ def read_foreground(background, samples=250):
     ratio = foreground / background
     return foreground, background, ratio
 
-def read_background(samples=1000):
+def read_background(samples=2000):
     """Read and average sensor values to establish the background light
     level. A high samples value will reduce sensitivity to flickering light
     sources but will proportionally increase acquisition latency. """

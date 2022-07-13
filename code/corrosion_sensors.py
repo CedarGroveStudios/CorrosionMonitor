@@ -69,20 +69,20 @@ class CorrosionLight:
         return self._raw / 65535 * 1100, self._ambient / 65535 * 1100
 
     def _read_sensor_value(self):
-        """Read and average 25 sensor values. Adjust the ambient baseline
+        """Read and average sensor values. Adjust the ambient baseline
         with the new reading."""
         self._raw = 0
-        for i in range(250):
+        for i in range(2000):
             self._raw = self._raw + self._sensor.value
-        self._raw = self._raw / 250
+        self._raw = self._raw / 2000
         self._ambient = (0.99 * self._ambient) + (0.01 * self._raw)
 
     def ambient_calibrate(self):
         """Establish an ambient light level."""
         self._ambient = 0
-        for i in range(1000):
+        for i in range(2000):
             self._ambient = self._ambient + self._sensor.value
-        self._ambient = self._ambient / 1000
+        self._ambient = self._ambient / 2000
 
 
 class CorrosionTempHumid:

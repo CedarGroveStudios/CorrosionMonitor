@@ -80,6 +80,7 @@ while True:
     # Monitor the light level; look for a gesture and adjust brightness
     light_level, ambient_level = light.raw  # Get light sensor raw value (0 to 65535)
     brightness_ratio = light_level / ambient_level
+    #print(light_level, ambient_level, brightness_ratio)
     if not backlight_on:
         # Check for gesture; reading less than threshold of brightness ratio
         if brightness_ratio < GESTURE_DETECT_THRESHOLD:

@@ -1,7 +1,7 @@
 # Workshop Corrosion Monitor
-# Copyright 2018, 2019, 2020, 2021, 2022 by JG for Cedar Grove Maker Studios
+# Copyright 2018 to 2022 by JG for Cedar Grove Maker Studios
 #
-# corrosion_code.py 2022-07-11 v4.0711
+# corrosion_code.py 2022-07-17 v4.0717
 
 import time
 import board
@@ -9,7 +9,8 @@ import supervisor
 from digitalio import DigitalInOut, Direction
 from simpleio import map_range
 from corrosion_display import CorrosionDisplay
-from corrosion_sensors import CorrosionTempHumid, CorrosionLight, CorrosionTemp
+from corrosion_sensors import CorrosionTempHumid, CorrosionTemp
+from cedargrove_shadow_detector import ShadowDetector
 
 print("running corrosion_code.py")
 
@@ -44,10 +45,10 @@ GESTURE_DURATION = 10            # Backlight "on" duration after gesture (second
 GESTURE_DETECT_THRESHOLD = 0.90  # Detection threshold compared to ambient light
 
 # Instantiate Corrosion Monitor classes
-sensor = CorrosionTempHumid(sensor="SHT31D")
-light  = CorrosionLight()
-pcb    = CorrosionTemp()
-disp   = CorrosionDisplay(brightness=0.75)
+sensor  = CorrosionTempHumid(sensor="SHT31D")
+pcb     = CorrosionTemp()
+disp    = CorrosionDisplay(brightness=0.75)
+gesture = ShadowDetector(pin=board.LIGHT, threshold=GESTURE_DETECT_THRESHOLD)
 
 fan           = DigitalInOut(board.D4)  # D4 Stemma 3-pin connector
 fan.direction = Direction.OUTPUT
@@ -77,20 +78,13 @@ while True:
 
     disp.clock_tick = not disp.clock_tick  # Change the on-screen tick indicator
 
-    # Monitor the light level; look for a gesture and adjust brightness
-    light_level, ambient_level = light.raw  # Get light sensor raw value (0 to 65535)
-    brightness_ratio = light_level / ambient_level
-    #print(light_level, ambient_level, brightness_ratio)
     if not backlight_on:
-        # Check for gesture; reading less than threshold of brightness ratio
-        if brightness_ratio < GESTURE_DETECT_THRESHOLD:
+        # Check for gesture
+        if gesture.detect():
             print(f"GESTURE DETECTED {time_str:16s}")
             backlight_timer = time.monotonic()
             backlight_on = True
-        elif brightness_ratio > 2 - GESTURE_DETECT_THRESHOLD:
-            # Ambient light level increased; recalibrate ambient level
-            print("Recalibrate light sensor ambient level")
-            light.ambient_calibrate()  # Update light sensor ambient level value
+
     if backlight_on:
         # Set display brightness to maximum regardless of cooling fan state
         disp.brightness = 1.0
@@ -98,8 +92,8 @@ while True:
         if (time.monotonic() - backlight_timer) > GESTURE_DURATION:
             print(f"GESTURE TIMEOUT  {time_str:16s}")
             backlight_on = False
-            print("Recalibrate light sensor ambient level")
-            light.ambient_calibrate()  # Update light sensor ambient level value
+            print("Recalibrate light sensor background level")
+            gesture.refresh_background()  # Update light sensor ambient level value
     else:
         # Set the idle backlight level when not responding to a gesture
         if fan.value:
@@ -107,7 +101,7 @@ while True:
             disp.brightness = FAN_ON_DISP_BRIGHTNESS
         else:
             # Set the display to a slightly dimmed level based on ambient level
-            disp.brightness = map_range(ambient_level / 65535, 0.010, 0.750, 0.010, 0.5)
+            disp.brightness = map_range(gesture.background / 65535, 0.010, 0.750, 0.010, 0.5)
 
     # Do something every minute or when first starting the while loop
     if now.tm_sec == 0 or while_loop_startup_init:
